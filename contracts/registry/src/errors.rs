@@ -72,10 +72,53 @@ impl From<common::CommonError> for ContractError {
             common::CommonError::NotFound => ContractError::NotFound,
             common::CommonError::AlreadyInitialized => ContractError::AlreadyInitialized,
             common::CommonError::AlreadyExists => ContractError::AlreadyRegistered,
-            common::CommonError::NotInitialized => ContractError::NotInitialized,
             // No exact match for InvalidInput in the registry error set;
             // Unauthorized is the closest generic catch-all.
             common::CommonError::InvalidInput => ContractError::Unauthorized,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ContractError;
+    use common::CommonError;
+
+    /// Every shared `CommonError` variant folds into a stable registry variant;
+    /// on-chain codes must not change (#1705).
+    #[test]
+    fn common_errors_map_to_expected_variants() {
+        assert_eq!(
+            ContractError::from(CommonError::Unauthorized),
+            ContractError::Unauthorized
+        );
+        assert_eq!(
+            ContractError::from(CommonError::NotFound),
+            ContractError::NotFound
+        );
+        assert_eq!(
+            ContractError::from(CommonError::AlreadyInitialized),
+            ContractError::AlreadyInitialized
+        );
+        assert_eq!(
+            ContractError::from(CommonError::AlreadyExists),
+            ContractError::AlreadyRegistered
+        );
+        assert_eq!(
+            ContractError::from(CommonError::InvalidInput),
+            ContractError::Unauthorized
+        );
+        assert_eq!(
+            ContractError::from(CommonError::NotInitialized),
+            ContractError::NotInitialized
+        );
+        assert_eq!(
+            ContractError::from(CommonError::Paused),
+            ContractError::Unauthorized
+        );
+        assert_eq!(
+            ContractError::from(CommonError::Overflow),
+            ContractError::Unauthorized
+        );
     }
 }

@@ -114,6 +114,10 @@ impl From<common::CommonError> for QFError {
             common::CommonError::AlreadyInitialized => QFError::InvalidPoolAmount,
             common::CommonError::AlreadyExists => QFError::RecipientBelowThreshold,
             common::CommonError::NotInitialized => QFError::NoContributions,
+            // QF is a pure computation with no pause concept; fold Paused into
+            // the generic InvalidPoolAmount case (issue #1705).
+            common::CommonError::Paused => QFError::InvalidPoolAmount,
+            common::CommonError::Overflow => QFError::Overflow,
         }
     }
 }
@@ -313,3 +317,45 @@ mod qf_tests;
 #[cfg(test)]
 #[path = "tests/invariants.rs"]
 mod invariants_tests;
+
+#[cfg(test)]
+mod common_error_mapping_tests {
+    use super::QFError;
+    use common::CommonError;
+
+    /// Every shared `CommonError` variant folds into a stable QF variant (#1705).
+    #[test]
+    fn common_errors_map_to_expected_variants() {
+        assert_eq!(QFError::from(CommonError::Unauthorized), QFError::InvalidPoolAmount);
+        assert_eq!(QFError::from(CommonError::NotFound), QFError::NoContributions);
+        assert_eq!(QFError::from(CommonError::InvalidInput), QFError::NegativeContribution);
+        assert_eq!(QFError::from(CommonError::AlreadyInitialized), QFError::InvalidPoolAmount);
+        assert_eq!(QFError::from(CommonError::AlreadyExists), QFError::RecipientBelowThreshold);
+        assert_eq!(QFError::from(CommonError::NotInitialized), QFError::NoContributions);
+        assert_eq!(QFError::from(CommonError::Paused), QFError::InvalidPoolAmount);
+        assert_eq!(QFError::from(CommonError::Overflow), QFError::Overflow);
+    }
+}
+
+#[cfg(test)]
+mod sqrt_overflow_tests {
+    use super::QuadraticFunding;
+
+    /// `integer_sqrt` uses bare integer arithmetic; the largest `u64` input
+    /// must not overflow or panic (#1707 overflow regression).
+    #[test]
+    fn integer_sqrt_max_u64_does_not_overflow() {
+        let s = QuadraticFunding::integer_sqrt(u64::MAX);
+        assert!(s > 0, "sqrt of u64::MAX is positive and fits in i128");
+    }
+
+    #[test]
+    fn integer_sqrt_known_values() {
+        assert_eq!(QuadraticFunding::integer_sqrt(0), 0);
+        assert_eq!(QuadraticFunding::integer_sqrt(1), 1);
+        assert_eq!(QuadraticFunding::integer_sqrt(4), 2);
+        assert_eq!(QuadraticFunding::integer_sqrt(9), 3);
+        assert_eq!(QuadraticFunding::integer_sqrt(15), 3);
+        assert_eq!(QuadraticFunding::integer_sqrt(16), 4);
+    }
+}

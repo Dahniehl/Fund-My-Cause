@@ -1510,7 +1510,7 @@ impl CrowdfundContract {
             .votes_for
             .checked_add(proposal.votes_against)
             .ok_or(ContractError::Overflow)?;
-        if total_votes > 0 && (proposal.votes_for as u64) * 2 > total_votes as u64 {
+        if total_votes > 0 && proposal.votes_for.checked_mul(2).map_or(true, |doubled| doubled > total_votes) {
             inst.set(&KEY_DEADLINE, &proposal.new_deadline);
             env.events().publish(
                 ("crowdfund", "extension_executed"),
