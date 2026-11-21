@@ -8,6 +8,7 @@ import { join } from "path";
 
 const PACKAGE_JSON_PATH = join(__dirname, "../../package.json");
 const APP_ROOT = join(__dirname, "../..");
+const ROOT_PACKAGE_JSON_PATH = join(APP_ROOT, "../../package.json");
 
 interface PackageJson {
   dependencies: Record<string, string>;
@@ -16,6 +17,9 @@ interface PackageJson {
 
 const packageJson: PackageJson = JSON.parse(
   readFileSync(PACKAGE_JSON_PATH, "utf-8"),
+);
+const rootPackageJson: PackageJson = JSON.parse(
+  readFileSync(ROOT_PACKAGE_JSON_PATH, "utf-8"),
 );
 
 // Dependencies that are implicitly used (e.g., through bundler plugins or config)
@@ -103,7 +107,6 @@ describe("Dependency Audit", () => {
       "@types/node",
       "@types/react",
       "@types/react-dom",
-      "eslint",
       "jest",
       "jest-axe",
       "jest-environment-jsdom",
@@ -115,6 +118,10 @@ describe("Dependency Audit", () => {
 
     const missing = criticalDevDeps.filter((dep) => !devDeps[dep]);
     expect(missing).toEqual([]);
+  });
+
+  it("should use the shared root ESLint installation", () => {
+    expect(rootPackageJson.devDependencies.eslint).toBeTruthy();
   });
 
   it("should verify jest and vitest are both available for testing", () => {

@@ -1,8 +1,5 @@
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
-
 # Run lint-staged
-npx lint-staged
+npx --no -- lint-staged --concurrent false
 
 # Secrets scanning: check staged files for common secret patterns
 echo "Running secrets scan on staged files..."
