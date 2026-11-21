@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "npm run dev --workspace=apps/interface",
     "build": "npm run build --workspace=packages/shared-utils && npm run build --workspace=apps/interface",
-    "lint": "npm run lint --workspace=apps/interface",
+    "lint": "eslint apps/interface/src apps/components-lib/src",
     "lint:dead-code": "npx --yes ts-prune@0.10.3 -p apps/interface/tsconfig.json",
     "lint:all": "npm run lint && npm run lint:dead-code",
     "test:a11y": "playwright test --grep @a11y",
@@ -29,7 +29,11 @@
     "@axe-core/playwright": "^4.8.0",
     "@commitlint/cli": "^20.5.2",
     "@commitlint/config-conventional": "^20.5.0",
+    "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.58.2",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "9.39.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
@@ -40,7 +44,7 @@
       "prettier --write"
     ],
     "apps/interface/**/*.{ts,tsx}": [
-      "eslint --config apps/interface/eslint.config.js --max-warnings=0"
+      "eslint --max-warnings=0"
     ],
     "*.rs": [
       "bash -c 'cargo fmt --all -- --check'"
