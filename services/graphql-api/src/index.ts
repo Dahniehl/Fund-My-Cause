@@ -4,7 +4,7 @@ import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
+import { expressMiddleware } from "@as-integrations/express4";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { parse } from "graphql";
 import { createRedisClient } from "./redis.js";
@@ -88,12 +88,13 @@ async function startServer() {
     });
     const pubsub = getPubSub();
     const env = readEnv();
-    const { dataLoaders, authService, rateLimiter, queryCostAnalyzer } = createServices({
-      contractService,
-      redis,
-      jwtSecret: VALIDATED_JWT_SECRET,
-      queryCost: { maxCost: env.queryCostMax, maxDepth: env.queryDepthMax },
-    });
+    const { dataLoaders, authService, rateLimiter, queryCostAnalyzer } =
+      createServices({
+        contractService,
+        redis,
+        jwtSecret: VALIDATED_JWT_SECRET,
+        queryCost: { maxCost: env.queryCostMax, maxDepth: env.queryDepthMax },
+      });
 
     logger.info("Services initialized");
 

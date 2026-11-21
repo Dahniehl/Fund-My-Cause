@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import globals from "globals";
 
 export default [
   js.configs.recommended,
@@ -12,13 +13,7 @@ export default [
         ecmaVersion: 2020,
         sourceType: "module",
       },
-      globals: {
-        console: "readonly",
-        process: "readonly",
-        setTimeout: "readonly",
-        clearTimeout: "readonly",
-        fetch: "readonly",
-      },
+      globals: { ...globals.node, ...globals.browser },
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
@@ -26,7 +21,10 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       "@typescript-eslint/explicit-function-return-type": "warn",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
     },
   },
 ];
