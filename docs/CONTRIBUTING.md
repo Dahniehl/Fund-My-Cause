@@ -75,6 +75,15 @@ npm run test
 
 ### 3. Commit Your Changes
 
+Husky runs `lint-staged` before each commit to format staged source files and
+lint staged app TypeScript files. Keep hooks enabled for normal commits. Bypass
+them only for urgent or tooling issues, and run equivalent checks manually
+before pushing:
+
+```bash
+git commit --no-verify
+```
+
 Use conventional commits:
 
 ```bash

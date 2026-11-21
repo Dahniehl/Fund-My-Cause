@@ -23,7 +23,7 @@
     "fixtures:generate": "npx ts-node scripts/generate-fixtures.ts",
     "seed:testnet": "bash scripts/seed-testnet.sh",
     "format": "cd apps/interface && npx prettier --write",
-    "prepare": "which husky >/dev/null 2>&1 && husky || true"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.8.0",
@@ -40,10 +40,10 @@
     "prettier": "^3.8.3"
   },
   "lint-staged": {
-    "*.{js,ts,tsx,jsx}": [
+    "*.{js,jsx,ts,tsx,mjs,cjs,json,css,scss,yml,yaml}": [
       "prettier --write"
     ],
-    "apps/interface/**/*.{ts,tsx}": [
+    "apps/**/*.{ts,tsx}": [
       "eslint --max-warnings=0"
     ],
     "*.rs": [
